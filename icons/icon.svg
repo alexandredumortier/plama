@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#1a6ea8"/>
+  <!-- Vague haute -->
+  <path d="M32 290 Q96 230 160 290 Q224 350 288 290 Q352 230 416 290 Q450 320 480 290"
+        stroke="#ffffff" stroke-width="28" stroke-linecap="round" fill="none"/>
+  <!-- Vague basse -->
+  <path d="M32 350 Q96 290 160 350 Q224 410 288 350 Q352 290 416 350 Q450 380 480 350"
+        stroke="rgba(255,255,255,0.55)" stroke-width="22" stroke-linecap="round" fill="none"/>
+  <!-- Flèche calendrier -->
+  <rect x="192" y="88" width="128" height="116" rx="14" fill="none" stroke="#ffffff" stroke-width="20"/>
+  <line x1="232" y1="72" x2="232" y2="120" stroke="#ffffff" stroke-width="18" stroke-linecap="round"/>
+  <line x1="280" y1="72" x2="280" y2="120" stroke="#ffffff" stroke-width="18" stroke-linecap="round"/>
+  <line x1="212" y1="156" x2="300" y2="156" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+  <line x1="212" y1="180" x2="270" y2="180" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Génère un calendrier ICS des plages de travail à la marée">
+  <meta name="theme-color" content="#1a6ea8">
+  <title>Plama – Planning marée</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <style>
+    /* ── Variables couleur – light / dark ─────────────────────────────── */
+    :root {
+      --bg:             #eef3f9;
+      --card:           #ffffff;
+      --text:           #18293d;
+      --text-muted:     #4a6880;
+      --accent:         #1a6ea8;
+      --accent-hover:   #155d96;
+      --border:         #c2d4e6;
+      --input-bg:       #ffffff;
+      --radio-sel-bg:   #1a6ea8;
+      --radio-sel-text: #ffffff;
+      --err-bg:         #fff4f4;
+      --err-text:       #b32727;
+      --err-border:     #e05252;
+      --ok-bg:          #f2fff4;
+      --ok-text:        #1e7d3a;
+      --ok-border:      #48c067;
+      --shadow:         0 2px 16px rgba(26,110,168,.10);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:             #0c1826;
+        --card:           #162333;
+        --text:           #ddeaf8;
+        --text-muted:     #7aa4c0;
+        --accent:         #3b8fd4;
+        --accent-hover:   #5aaae8;
+        --border:         #243a52;
+        --input-bg:       #0c1826;
+        --radio-sel-bg:   #3b8fd4;
+        --radio-sel-text: #ffffff;
+        --err-bg:         #2a1010;
+        --err-text:       #ff8080;
+        --err-border:     #b83030;
+        --ok-bg:          #0e2314;
+        --ok-text:        #68e085;
+        --ok-border:      #2d8c50;
+        --shadow:         0 2px 16px rgba(0,0,0,.40);
+      }
+    }
+
+    /* ── Reset & base ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0.75rem 1rem 2rem;
+    }
+
+    /* ── En-tête ──────────────────────────────────────────────────────── */
+    header {
+      text-align: center;
+      padding: 1.5rem 0 1.2rem;
+    }
+    .logo {
+      width: 52px; height: 52px;
+      margin: 0 auto 0.6rem;
+      display: block;
+    }
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -.5px;
+    }
+    h1 .sub {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0;
+      margin-top: 0.1rem;
+    }
+
+    /* ── Carte formulaire ─────────────────────────────────────────────── */
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 1.6rem 1.4rem;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    /* ── Champs ───────────────────────────────────────────────────────── */
+    .field { margin-bottom: 1.2rem; }
+
+    label.lbl {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: .03em;
+      text-transform: uppercase;
+      margin-bottom: 0.35rem;
+    }
+
+    select,
+    input[type="date"],
+    input[type="text"] {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: var(--input-bg);
+      color: var(--text);
+      font-size: 1rem;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: border-color .15s;
+    }
+    select:focus,
+    input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* Dates côte à côte */
+    .row { display: flex; gap: 0.75rem; }
+    .row .field { flex: 1; min-width: 0; }
+
+    /* ── Radio mode haute / basse ─────────────────────────────────────── */
+    .modes { display: flex; gap: 0.75rem; }
+    .mode-btn { flex: 1; }
+    .mode-btn input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .mode-btn label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      padding: 0.6rem 0.4rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: border-color .15s, background .15s, color .15s;
+      user-select: none;
+    }
+    .mode-btn input:checked + label {
+      border-color: var(--radio-sel-bg);
+      background: var(--radio-sel-bg);
+      color: var(--radio-sel-text);
+    }
+
+    /* ── Bouton ───────────────────────────────────────────────────────── */
+    .btn-submit {
+      display: block;
+      width: 100%;
+      padding: 0.8rem;
+      margin-top: 0.6rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .01em;
+      transition: background .15s, opacity .1s;
+    }
+    .btn-submit:hover  { background: var(--accent-hover); }
+    .btn-submit:active { opacity: .82; }
+
+    /* ── Message statut ───────────────────────────────────────────────── */
+    #status {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      display: none;
+    }
+    #status.error   { display: block; background: var(--err-bg);  color: var(--err-text);  border: 1px solid var(--err-border); }
+    #status.success { display: block; background: var(--ok-bg);   color: var(--ok-text);   border: 1px solid var(--ok-border); }
+
+    /* ── Pied de page ─────────────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      margin-top: 1.8rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <!-- Icône inline (marée + calendrier) -->
+    <svg class="logo" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="52" height="52" rx="12" fill="#1a6ea8"/>
+      <!-- Calendrier -->
+      <rect x="11" y="11" width="30" height="24" rx="4" stroke="#fff" stroke-width="2.5" fill="none"/>
+      <line x1="19" y1="8"  x2="19" y2="16" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="33" y1="8"  x2="33" y2="16" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="15" y1="22" x2="37" y2="22" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="19" cy="29" r="1.8" fill="#fff"/>
+      <circle cx="26" cy="29" r="1.8" fill="#fff"/>
+      <circle cx="33" cy="29" r="1.8" fill="#fff"/>
+      <!-- Vague en bas -->
+      <path d="M5 43 Q13 38 21 43 Q29 48 37 43 Q45 38 49 41"
+            stroke="rgba(255,255,255,.75)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    </svg>
+    <h1>Plama <span class="sub">Planning à la marée</span></h1>
+  </header>
+
+  <div class="card">
+    <form id="form" novalidate>
+
+      <div class="field">
+        <label class="lbl" for="port-select">Port</label>
+        <select id="port-select" required>
+          <option value="">Chargement…</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label class="lbl" for="date-debut">Date de début</label>
+          <input type="date" id="date-debut" required>
+        </div>
+        <div class="field">
+          <label class="lbl" for="date-fin">Date de fin</label>
+          <input type="date" id="date-fin" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="lbl" for="seuil">Seuil (m CM)</label>
+        <input type="text" id="seuil" inputmode="decimal"
+               placeholder="ex. 4,5" autocomplete="off" required>
+      </div>
+
+      <div class="field">
+        <label class="lbl">Mode</label>
+        <div class="modes">
+          <div class="mode-btn">
+            <input type="radio" name="mode" id="mode-h" value="h" checked>
+            <label for="mode-h">↑ Marée haute</label>
+          </div>
+          <div class="mode-btn">
+            <input type="radio" name="mode" id="mode-b" value="b">
+            <label for="mode-b">↓ Marée basse</label>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">📅 Créer le calendrier</button>
+
+      <div id="status" role="alert" aria-live="polite"></div>
+
+    </form>
+  </div>
+
+  <footer>Fonctionne hors-ligne · Données harmoniques SHOM</footer>
+
+  <!-- Moteur de marée + export ICS + application -->
+  <script src="js/maree.js"></script>
+  <script src="js/ics.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
