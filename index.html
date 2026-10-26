@@ -198,7 +198,28 @@
       font-size: 0.78rem;
       color: var(--text-muted);
     }
+
+    /* ── Carte des ports ────────────────────────────────────────────────── */
+    #map-ports {
+      height: 45vh;
+      max-width: 440px;
+      margin: 0 auto 1rem;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      background: #c8e0f0; /* couleur mer si pas de fond de carte */
+    }
+    /* Correctif couleur sombre pour les popups Leaflet */
+    @media (prefers-color-scheme: dark) {
+      .leaflet-popup-content-wrapper,
+      .leaflet-popup-tip {
+        background: #1e2e3e;
+        color: #ddeaf8;
+      }
+    }
   </style>
+  <!-- Leaflet 1.9.4 embarqué (même version que l'appli PC) -->
+  <link rel="stylesheet" href="js/lib/leaflet.css">
 </head>
 <body>
 
@@ -220,6 +241,9 @@
     </svg>
     <h1>Plama <span class="sub">Planning à la marée</span></h1>
   </header>
+
+  <!-- Carte des ports (adapté de l'appli PC, templates/index.html) -->
+  <div id="map-ports"></div>
 
   <div class="card">
     <form id="form" novalidate>
@@ -271,6 +295,8 @@
 
   <footer>Fonctionne hors-ligne · Données harmoniques SHOM</footer>
 
+  <!-- Leaflet 1.9.4 embarqué (même version que l'appli PC) -->
+  <script src="js/lib/leaflet.js"></script>
   <!-- Moteur de marée + export ICS + application -->
   <script src="js/maree.js"></script>
   <script src="js/ics.js"></script>

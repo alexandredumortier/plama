@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME = 'plama-v2';
+const CACHE_NAME = 'plama-v3';
 
 // Tous les fichiers à mettre en cache pour le mode hors-ligne
 const ASSETS = [
@@ -9,7 +9,15 @@ const ASSETS = [
   'js/maree.js',
   'js/ics.js',
   'js/app.js',
+  'js/lib/leaflet.js',
+  'js/lib/leaflet.css',
+  'js/lib/images/marker-icon.png',
+  'js/lib/images/marker-icon-2x.png',
+  'js/lib/images/marker-shadow.png',
+  'js/lib/images/layers.png',
+  'js/lib/images/layers-2x.png',
   'data/ports.json',
+  'data/cote.geojson',
   'manifest.webmanifest',
   'icons/icon.svg',
   'icons/icon-192.png',

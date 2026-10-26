@@ -6,6 +6,68 @@
     navigator.serviceWorker.register('sw.js').catch(() => {});
   }
 
+  // ── Carte des ports (adapté de templates/index.html de l'appli PC) ──────
+  // Source : appli PC — même version Leaflet 1.9.4, même vue initiale, mêmes marqueurs
+  let _carte = null;
+  let _marqueurs = [];  // {marqueur, fichier}
+
+  function _initCarte() {
+    // Vue initiale identique à l'appli PC : [47.8, -3.2], zoom 7
+    _carte = L.map('map-ports').setView([47.8, -3.2], 7);
+
+    // Pane dédié au fond de côte (zIndex 150 = sous les tuiles OSM à 200)
+    // Ainsi OSM s'affiche normalement en ligne ; hors ligne, seul le fond de côte est visible
+    const cotePaane = _carte.createPane('cote');
+    cotePaane.style.zIndex = '150';
+
+    // Fond de carte hors ligne : polygones terres Natural Earth (domaine public)
+    // Fond mer bleu pâle : couleur CSS du conteneur (#map-ports, background: #c8e0f0)
+    // Terre gris clair par-dessus, placé dans le pane 'cote' (sous les tuiles OSM)
+    fetch('data/cote.geojson')
+      .then(r => r.json())
+      .then(gj => {
+        L.geoJSON(gj, {
+          pane: 'cote',
+          style: {
+            fillColor: '#d4dce3',
+            fillOpacity: 1,
+            color: '#8fa8b8',
+            weight: 0.8
+          }
+        }).addTo(_carte);
+      })
+      .catch(() => { /* pas de fond de carte hors ligne, la carte reste utilisable */ });
+
+    // Tuiles OSM quand le réseau est disponible (même source et attribution que l'appli PC)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 18
+    }).addTo(_carte);
+  }
+
+  function _peuplerCarte(ports) {
+    if (!_carte) return;
+    // Crée les marqueurs (identique à l'appli PC : L.marker, closeOnClick: false, autoClose: true)
+    ports.forEach(port => {
+      if (!port.lat || !port.lon) return;
+      const marqueur = L.marker([port.lat, port.lon])
+        .bindPopup(
+          '<b>' + port.nom + '</b>',
+          { maxWidth: 200, closeOnClick: false, autoClose: true }
+        );
+      marqueur.on('click', () => {
+        // Un clic sur le marqueur sélectionne le port dans la liste déroulante
+        sel.value = port.fichier;
+        sel.dispatchEvent(new Event('change'));
+      });
+      marqueur.addTo(_carte);
+      _marqueurs.push({ marqueur, fichier: port.fichier });
+    });
+  }
+
+  _initCarte();
+  // ── Fin code carte ───────────────────────────────────────────────────────
+
   const statusEl = document.getElementById('status');
   const sel      = document.getElementById('port-select');
 
@@ -40,6 +102,8 @@
       sel.appendChild(opt);
       portMap[p.fichier] = p;
     }
+    // Peuple la carte avec les marqueurs (lat, lon, nom, fichier tous présents dans ports.json)
+    _peuplerCarte(ports);
   } catch (err) {
     sel.innerHTML = '<option value="">Erreur de chargement</option>';
     sel.disabled = true;
