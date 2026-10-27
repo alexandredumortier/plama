@@ -487,43 +487,24 @@
     }
     .fc-end { text-align: right; margin-top: auto; }
 
-    /* PM/BM à l'intérieur d'un créneau */
-    .fc-pmbm {
+    /* Étiquettes PM/BM (toutes, dans et hors créneaux) */
+    .frise-pmbm-lbl {
       position: absolute;
       left: 0;
       right: 0;
       text-align: center;
       font-size: 0.52rem;
       line-height: 1.25;
-      padding: 1px 2px;
-      background: rgba(255,255,255,.55);
+      padding: 1px 1px;
       border-radius: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      z-index: 2;
+      pointer-events: none;
     }
-    .fc-pm { color: #1e7d3a; }
-    .fc-bm { color: #b32727; }
+    .fpl-pm { color: #1e7d3a; background: rgba(255,255,255,.75); }
+    .fpl-bm { color: #b32727; background: rgba(255,255,255,.75); }
     @media (prefers-color-scheme: dark) {
-      .fc-pmbm { background: rgba(0,0,0,.45); }
-      .fc-pm { color: #68e085; }
-      .fc-bm { color: #ff8080; }
-    }
-
-    /* Marqueurs PM/BM hors créneaux */
-    .frise-pmbm-marker {
-      position: absolute;
-      left: 0;
-      right: 0;
-      height: 0;
-      border-top: 1.5px dashed;
-      opacity: .55;
-    }
-    .fpm-pm { border-color: #1e7d3a; }
-    .fpm-bm { border-color: #b32727; }
-    @media (prefers-color-scheme: dark) {
-      .fpm-pm { border-color: #68e085; }
-      .fpm-bm { border-color: #ff8080; }
+      .fpl-pm { color: #68e085; background: rgba(0,0,0,.55); }
+      .fpl-bm { color: #ff8080; background: rgba(0,0,0,.55); }
     }
   </style>
   <!-- Leaflet 1.9.4 embarqué -->

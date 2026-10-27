@@ -459,20 +459,6 @@
         if (hPx >= 16 && s === cStart) {
           html += '<span class="fc-start">' + _fmtHeure(s) + '</span>';
         }
-        // PM/BM à l'intérieur du créneau
-        if (hPx >= 44) {
-          const evInBlock = pmBm.filter(ev => ev.dtMs >= s && ev.dtMs < e);
-          for (const ev of evInBlock) {
-            const evD    = new Date(ev.dtMs);
-            const evPx   = (evD.getUTCHours() * 60 + evD.getUTCMinutes()) / 60 * PX_PAR_HEURE;
-            const evTop  = Math.max(0, Math.min(hPx - 24, evPx - topPx - 12));
-            const hStr   = ev.hauteur.toFixed(2).replace('.', ',');
-            html +=
-              '<span class="fc-pmbm fc-' + ev.type.toLowerCase() + '" style="top:' + evTop.toFixed(1) + 'px">' +
-                ev.type + ' ' + _fmtHeure(ev.dtMs) + ' ' + hStr + 'm' +
-              '</span>';
-          }
-        }
         // Heure de fin (si le créneau se termine bien dans ce jour, espace suffisant)
         if (hPx >= 28 && e === cEnd) {
           html += '<span class="fc-end">' + _fmtHeure(e) + '</span>';
@@ -482,22 +468,24 @@
         col.appendChild(block);
       }
 
-      // ── Marqueurs PM/BM hors créneaux ───────────────────────────────
+      // ── Étiquettes PM/BM (toutes, dans et hors créneaux) ────────────
+      const LABEL_H = 24; // hauteur estimée d'une étiquette à 2 lignes (px)
+      let lastBottom = 0;
       for (const ev of pmBm) {
         if (ev.dtMs < dayStartMs || ev.dtMs >= dayEndMs) continue;
-        // Vérifier qu'il n'est PAS dans un créneau de travail
-        const dansCreneau = creneaux.some(([cs, ce]) => ev.dtMs >= cs && ev.dtMs < ce);
-        if (dansCreneau) continue;
-
-        const evD   = new Date(ev.dtMs);
-        const topPx = (evD.getUTCHours() * 60 + evD.getUTCMinutes()) / 60 * PX_PAR_HEURE;
-        const marker = document.createElement('div');
-        marker.className = 'frise-pmbm-marker fpm-' + ev.type.toLowerCase();
-        marker.style.top = topPx + 'px';
-        marker.title =
-          ev.type + ' ' + _fmtHeure(ev.dtMs) + ' \u2014 ' +
-          ev.hauteur.toFixed(2).replace('.', ',') + '\u00a0m';
-        col.appendChild(marker);
+        const evD = new Date(ev.dtMs);
+        let topPx = (evD.getUTCHours() * 60 + evD.getUTCMinutes()) / 60 * PX_PAR_HEURE;
+        // Décaler légèrement si chevauchement avec l'étiquette précédente
+        if (topPx < lastBottom) topPx = lastBottom;
+        // Ne pas déborder sous la colonne
+        if (topPx + LABEL_H > TOTAL_PX) topPx = TOTAL_PX - LABEL_H;
+        lastBottom = topPx + LABEL_H;
+        const hStr = ev.hauteur.toFixed(2).replace('.', ',');
+        const lbl  = document.createElement('div');
+        lbl.className = 'frise-pmbm-lbl fpl-' + ev.type.toLowerCase();
+        lbl.style.top = topPx.toFixed(1) + 'px';
+        lbl.innerHTML = ev.type + '\u00a0' + _fmtHeure(ev.dtMs) + '<br>' + hStr + '\u00a0m';
+        col.appendChild(lbl);
       }
 
       body.appendChild(col);
