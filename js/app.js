@@ -194,11 +194,6 @@
       return;
     }
 
-    // ── Génération ICS ───────────────────────────────────────────────────
-    const contenu = ics.genererIcs(
-      globalIntervals, tideEvents, port.nom, seuil, mode, debutMs, finMs
-    );
-
     // ── Nom du fichier : Plama <Port> JJ-MM-AAAA au JJ-MM-AAAA <seuil><H|B>.ics ──
     const seuilFr  = String(seuil).replace('.', ',');
     const modeChar = mode === 'h' ? 'H' : 'B';
@@ -206,6 +201,12 @@
       'Plama ' + port.nom + ' ' +
       fmtDate(debutMs) + ' au ' + fmtDate(finMs) + ' ' +
       seuilFr + modeChar + '.ics'
+    );
+
+    // ── Génération ICS ───────────────────────────────────────────────────
+    const calname = filename.replace(/\.ics$/, '');
+    const contenu = ics.genererIcs(
+      globalIntervals, tideEvents, port.nom, seuil, mode, debutMs, finMs, calname
     );
 
     // ── Téléchargement ───────────────────────────────────────────────────

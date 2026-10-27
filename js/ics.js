@@ -202,7 +202,9 @@ function _duree_hhmm(minutes) {
  *
  * @returns {string} contenu du fichier .ics, lignes terminées par CRLF
  */
-function genererIcs(globalIntervals, tideEvents, nomPort, seuil, choix, dateDebutMs, dateFinMs) {
+function genererIcs(globalIntervals, tideEvents, nomPort, seuil, choix, dateDebutMs, dateFinMs, calname) {
+    // Ajout propre à la version mobile, absent de l'appli PC
+    if (calname === undefined) calname = 'Plama';
     // DTSTAMP : heure UTC courante, identique à datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
     const now = new Date();
     const p2 = n => String(n).padStart(2, '0');
@@ -226,10 +228,11 @@ function genererIcs(globalIntervals, tideEvents, nomPort, seuil, choix, dateDebu
     lines.push('BEGIN:VCALENDAR\r\n');
     lines.push(_prop('VERSION', '2.0'));
     lines.push(_prop('PRODID', '-//Appli Maree//FR'));
+    // Ajout propre à la version mobile, absent de l'appli PC
+    lines.push(_prop('X-WR-CALNAME', _escape(calname)));
+    lines.push(_prop('X-WR-TIMEZONE', 'Europe/Paris'));
     lines.push(_prop('CALSCALE', 'GREGORIAN'));
     lines.push(_prop('METHOD', 'PUBLISH'));
-    lines.push(_prop('X-WR-CALNAME', _escape('Mar\u00e9e ' + nomPort)));
-    lines.push(_prop('X-WR-TIMEZONE', 'Europe/Paris'));
     lines.push(VTIMEZONE_PARIS);
 
     // ── Événements de travail ──────────────────────────────────────────────
