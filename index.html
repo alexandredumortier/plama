@@ -303,6 +303,16 @@
       margin-top: 0.2rem;
       opacity: .8;
     }
+    .nota-accueil {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      text-align: left;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      background: var(--bg);
+    }
 
     /* ══════════════════════════════════════════════════════════════════
        Frise de consultation
@@ -552,6 +562,7 @@
         Exporter
         <span class="btn-sub">Générer un fichier calendrier .ics</span>
       </button>
+      <p class="nota-accueil"><strong>Nota :</strong> les calculs de cette application reposent sur des données harmoniques libres d'accès, et non sur les données officielles du SHOM. Ces données sont moins précises que celles du SHOM : des écarts peuvent apparaître avec les prévisions officielles. Cette application ne peut donc pas se substituer à une vérification des niveaux de marée avec un outil officiel du SHOM avant de lancer une opération de travail à la marée.</p>
     </div>
   </div>
 
@@ -698,7 +709,7 @@
   </div>
 
   <!-- ── Pied de page ──────────────────────────────────────────────── -->
-  <footer id="main-footer">Fonctionne hors-ligne · Données harmoniques SHOM</footer>
+  <footer id="main-footer">Fonctionne hors-ligne</footer>
 
   <!-- Leaflet + moteur de marée + export ICS + application -->
   <script src="js/lib/leaflet.js"></script>
