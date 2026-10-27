@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME = 'plama-v4';
+const CACHE_NAME = 'plama-v5';
 
 // Tous les fichiers à mettre en cache pour le mode hors-ligne
 const ASSETS = [
@@ -24,15 +24,15 @@ const ASSETS = [
   'icons/icon-512.png',
 ];
 
-// Installation : mise en cache initiale de tous les assets
+// Installation : mise en cache initiale — NE PAS appeler skipWaiting ici.
+// Le client envoie { type: 'SKIP_WAITING' } quand l'utilisateur accepte la mise à jour.
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
-  self.skipWaiting();
 });
 
-// Activation : suppression des anciens caches
+// Activation : suppression des anciens caches, puis prise de contrôle immédiate.
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -42,6 +42,13 @@ self.addEventListener('activate', (event) => {
     )
   );
   self.clients.claim();
+});
+
+// Message du client : l'utilisateur a accepté la mise à jour.
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 // Fetch : cache-first (hors-ligne d'abord, réseau en secours)

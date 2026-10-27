@@ -29,6 +29,8 @@
       --ok-text:        #1e7d3a;
       --ok-border:      #48c067;
       --shadow:         0 2px 16px rgba(26,110,168,.10);
+      --creneau-bg:     rgba(26,110,168,.20);
+      --creneau-border: #1a6ea8;
     }
     @media (prefers-color-scheme: dark) {
       :root {
@@ -49,6 +51,8 @@
         --ok-text:        #68e085;
         --ok-border:      #2d8c50;
         --shadow:         0 2px 16px rgba(0,0,0,.40);
+        --creneau-bg:     rgba(59,143,212,.18);
+        --creneau-border: #3b8fd4;
       }
     }
 
@@ -160,7 +164,7 @@
       color: var(--radio-sel-text);
     }
 
-    /* ── Bouton ───────────────────────────────────────────────────────── */
+    /* ── Bouton principal ─────────────────────────────────────────────── */
     .btn-submit {
       display: block;
       width: 100%;
@@ -180,7 +184,7 @@
     .btn-submit:active { opacity: .82; }
 
     /* ── Message statut ───────────────────────────────────────────────── */
-    #status {
+    .status-msg {
       margin-top: 1rem;
       padding: 0.75rem 1rem;
       border-radius: 10px;
@@ -188,8 +192,8 @@
       line-height: 1.4;
       display: none;
     }
-    #status.error   { display: block; background: var(--err-bg);  color: var(--err-text);  border: 1px solid var(--err-border); }
-    #status.success { display: block; background: var(--ok-bg);   color: var(--ok-text);   border: 1px solid var(--ok-border); }
+    .status-msg.error   { display: block; background: var(--err-bg);  color: var(--err-text);  border: 1px solid var(--err-border); }
+    .status-msg.success { display: block; background: var(--ok-bg);   color: var(--ok-text);   border: 1px solid var(--ok-border); }
 
     /* ── Pied de page ─────────────────────────────────────────────────── */
     footer {
@@ -200,16 +204,15 @@
     }
 
     /* ── Carte des ports ────────────────────────────────────────────────── */
-    #map-ports {
-      height: 45vh;
+    .map-ports {
+      height: 40vh;
       max-width: 440px;
       margin: 0 auto 1rem;
       border-radius: 14px;
       overflow: hidden;
       box-shadow: var(--shadow);
-      background: #c8e0f0; /* couleur mer si pas de fond de carte */
+      background: #c8e0f0;
     }
-    /* Correctif couleur sombre pour les popups Leaflet */
     @media (prefers-color-scheme: dark) {
       .leaflet-popup-content-wrapper,
       .leaflet-popup-tip {
@@ -217,17 +220,326 @@
         color: #ddeaf8;
       }
     }
+
+    /* ══════════════════════════════════════════════════════════════════
+       Bandeau mise à jour
+    ══════════════════════════════════════════════════════════════════ */
+    #bandeau-maj {
+      background: var(--accent);
+      color: #fff;
+      text-align: center;
+      padding: 0.65rem 1rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: .01em;
+      user-select: none;
+    }
+    #bandeau-maj:active { opacity: .85; }
+
+    /* ══════════════════════════════════════════════════════════════════
+       Gestion des écrans
+    ══════════════════════════════════════════════════════════════════ */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Bouton retour ──────────────────────────────────────────────── */
+    .btn-retour {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0.3rem 0;
+      margin-bottom: 0.6rem;
+    }
+    .btn-retour:active { opacity: .7; }
+
+    /* ══════════════════════════════════════════════════════════════════
+       Écran Accueil
+    ══════════════════════════════════════════════════════════════════ */
+    .accueil-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+    .accueil-desc {
+      font-size: 0.93rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 0.25rem;
+    }
+    .btn-accueil {
+      display: block;
+      width: 100%;
+      padding: 1.1rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--text);
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+      line-height: 1.3;
+    }
+    .btn-accueil:hover  { border-color: var(--accent); }
+    .btn-accueil:active { opacity: .82; }
+    .btn-accueil.btn-accent {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-accueil.btn-accent:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-accueil .btn-sub {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 400;
+      margin-top: 0.2rem;
+      opacity: .8;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       Frise de consultation
+    ══════════════════════════════════════════════════════════════════ */
+
+    /* Écran frise : position fixe plein écran */
+    #screen-frise.active {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    /* Barre supérieure de la frise */
+    #frise-top {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 0.6rem;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    #btn-retour-frise {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-size: 1.3rem;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0.2rem 0.3rem;
+      line-height: 1;
+    }
+    #btn-retour-frise:active { opacity: .7; }
+    #frise-info {
+      flex: 1;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Zone principale : flèches + grille */
+    #frise-outer {
+      flex: 1;
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
+      min-height: 0;
+    }
+    .frise-nav-btn {
+      width: 26px;
+      flex-shrink: 0;
+      background: var(--card);
+      border: none;
+      border-right: 1px solid var(--border);
+      color: var(--accent);
+      font-size: 1.6rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .1s;
+      user-select: none;
+    }
+    #btn-frise-next { border-right: none; border-left: 1px solid var(--border); }
+    .frise-nav-btn:active { background: var(--border); }
+
+    #frise-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+    #frise-grille {
+      width: 100%;
+    }
+
+    /* En-tête des colonnes (sticky dans le scroll) */
+    .frise-header-row {
+      display: flex;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--card);
+      border-bottom: 1.5px solid var(--border);
+    }
+    .frise-col-time-head {
+      width: 26px;
+      flex-shrink: 0;
+    }
+    .frise-col-header {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2px 1px;
+      border-left: 1px solid var(--border);
+      min-width: 0;
+    }
+    .frise-dow  {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .frise-date {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* Corps : axe temps + colonnes de jours */
+    .frise-body {
+      display: flex;
+      position: relative;
+    }
+    .frise-time-axis {
+      width: 26px;
+      flex-shrink: 0;
+      position: relative;
+      height: 1344px; /* 24h × 56px */
+      border-right: 1.5px solid var(--border);
+      background: var(--card);
+    }
+    .frise-hour-label {
+      position: absolute;
+      left: 0;
+      right: 2px;
+      text-align: right;
+      font-size: 0.58rem;
+      color: var(--text-muted);
+      line-height: 1;
+      transform: translateY(-50%);
+      white-space: nowrap;
+    }
+    .frise-day-col {
+      flex: 1;
+      position: relative;
+      border-left: 1px solid var(--border);
+      height: 1344px; /* 24h × 56px */
+      /* Lignes d'heures toutes les 56px (1h) */
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 55px,
+        var(--border) 55px,
+        var(--border) 56px
+      );
+      min-width: 0;
+    }
+
+    /* Créneaux de travail */
+    .frise-creneau {
+      position: absolute;
+      left: 1px;
+      right: 1px;
+      background: var(--creneau-bg);
+      border: 1.5px solid var(--creneau-border);
+      border-radius: 3px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1px 2px;
+      min-height: 3px;
+    }
+    .fc-start,
+    .fc-end {
+      font-size: 0.58rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1.1;
+      display: block;
+      white-space: nowrap;
+    }
+    .fc-end { text-align: right; margin-top: auto; }
+
+    /* PM/BM à l'intérieur d'un créneau */
+    .fc-pmbm {
+      position: absolute;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 0.52rem;
+      line-height: 1.25;
+      padding: 1px 2px;
+      background: rgba(255,255,255,.55);
+      border-radius: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .fc-pm { color: #1e7d3a; }
+    .fc-bm { color: #b32727; }
+    @media (prefers-color-scheme: dark) {
+      .fc-pmbm { background: rgba(0,0,0,.45); }
+      .fc-pm { color: #68e085; }
+      .fc-bm { color: #ff8080; }
+    }
+
+    /* Marqueurs PM/BM hors créneaux */
+    .frise-pmbm-marker {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 0;
+      border-top: 1.5px dashed;
+      opacity: .55;
+    }
+    .fpm-pm { border-color: #1e7d3a; }
+    .fpm-bm { border-color: #b32727; }
+    @media (prefers-color-scheme: dark) {
+      .fpm-pm { border-color: #68e085; }
+      .fpm-bm { border-color: #ff8080; }
+    }
   </style>
-  <!-- Leaflet 1.9.4 embarqué (même version que l'appli PC) -->
+  <!-- Leaflet 1.9.4 embarqué -->
   <link rel="stylesheet" href="js/lib/leaflet.css">
 </head>
 <body>
 
-  <header>
-    <!-- Icône inline (marée + calendrier) -->
+  <!-- ── Bandeau mise à jour (masqué par défaut) ──────────────────────── -->
+  <div id="bandeau-maj" hidden>
+    Nouvelle version disponible — toucher pour recharger
+  </div>
+
+  <!-- ── En-tête commun ───────────────────────────────────────────────── -->
+  <header id="main-header">
     <svg class="logo" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <rect width="52" height="52" rx="12" fill="#1a6ea8"/>
-      <!-- Calendrier -->
       <rect x="11" y="11" width="30" height="24" rx="4" stroke="#fff" stroke-width="2.5" fill="none"/>
       <line x1="19" y1="8"  x2="19" y2="16" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
       <line x1="33" y1="8"  x2="33" y2="16" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
@@ -235,69 +547,180 @@
       <circle cx="19" cy="29" r="1.8" fill="#fff"/>
       <circle cx="26" cy="29" r="1.8" fill="#fff"/>
       <circle cx="33" cy="29" r="1.8" fill="#fff"/>
-      <!-- Vague en bas -->
       <path d="M5 43 Q13 38 21 43 Q29 48 37 43 Q45 38 49 41"
             stroke="rgba(255,255,255,.75)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
     </svg>
     <h1>Plama <span class="sub">Planning à la marée</span></h1>
   </header>
 
-  <!-- Carte des ports (adapté de l'appli PC, templates/index.html) -->
-  <div id="map-ports"></div>
+  <!-- ════════════════════════════════════════════════════════════════
+       Écran 1 : Accueil
+  ════════════════════════════════════════════════════════════════ -->
+  <div id="screen-accueil" class="screen active">
+    <div class="card accueil-card">
+      <p class="accueil-desc">
+        Choisissez un mode pour commencer.
+      </p>
 
-  <div class="card">
-    <form id="form" novalidate>
+      <button id="btn-vers-consulter" class="btn-accueil btn-accent">
+        Consulter
+        <span class="btn-sub">Visualiser les plages de travail sur une frise</span>
+      </button>
 
-      <div class="field">
-        <label class="lbl" for="port-select">Port</label>
-        <select id="port-select" required>
-          <option value="">Chargement…</option>
-        </select>
-      </div>
-
-      <div class="row">
-        <div class="field">
-          <label class="lbl" for="date-debut">Date de début</label>
-          <input type="date" id="date-debut" required>
-        </div>
-        <div class="field">
-          <label class="lbl" for="date-fin">Date de fin</label>
-          <input type="date" id="date-fin" required>
-        </div>
-      </div>
-
-      <div class="field">
-        <label class="lbl" for="seuil">Seuil (m CM)</label>
-        <input type="text" id="seuil" inputmode="decimal"
-               placeholder="ex. 4,5" autocomplete="off" required>
-      </div>
-
-      <div class="field">
-        <label class="lbl">Mode</label>
-        <div class="modes">
-          <div class="mode-btn">
-            <input type="radio" name="mode" id="mode-h" value="h" checked>
-            <label for="mode-h">↑ Marée haute</label>
-          </div>
-          <div class="mode-btn">
-            <input type="radio" name="mode" id="mode-b" value="b">
-            <label for="mode-b">↓ Marée basse</label>
-          </div>
-        </div>
-      </div>
-
-      <button type="submit" class="btn-submit">📅 Créer le calendrier</button>
-
-      <div id="status" role="alert" aria-live="polite"></div>
-
-    </form>
+      <button id="btn-vers-exporter" class="btn-accueil">
+        Exporter
+        <span class="btn-sub">Générer un fichier calendrier .ics</span>
+      </button>
+    </div>
   </div>
 
-  <footer>Fonctionne hors-ligne · Données harmoniques SHOM</footer>
+  <!-- ════════════════════════════════════════════════════════════════
+       Écran 2 : Exporter (carte + formulaire ICS)
+  ════════════════════════════════════════════════════════════════ -->
+  <div id="screen-exporter" class="screen">
 
-  <!-- Leaflet 1.9.4 embarqué (même version que l'appli PC) -->
+    <div style="max-width:440px;margin:0 auto;">
+      <button class="btn-retour" id="btn-retour-export">&#8592; Retour</button>
+    </div>
+
+    <div id="map-ports-export" class="map-ports"></div>
+
+    <div class="card">
+      <form id="form-export" novalidate>
+
+        <div class="field">
+          <label class="lbl" for="port-select-export">Port</label>
+          <select id="port-select-export" required>
+            <option value="">Chargement…</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label class="lbl" for="date-debut-export">Date de début</label>
+            <input type="date" id="date-debut-export" required>
+          </div>
+          <div class="field">
+            <label class="lbl" for="date-fin-export">Date de fin</label>
+            <input type="date" id="date-fin-export" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="lbl" for="seuil-export">Seuil (m CM)</label>
+          <input type="text" id="seuil-export" inputmode="decimal"
+                 placeholder="ex. 4,5" autocomplete="off" required>
+        </div>
+
+        <div class="field">
+          <label class="lbl">Mode</label>
+          <div class="modes">
+            <div class="mode-btn">
+              <input type="radio" name="mode-export" id="mode-h-export" value="h" checked>
+              <label for="mode-h-export">&#8593; Marée haute</label>
+            </div>
+            <div class="mode-btn">
+              <input type="radio" name="mode-export" id="mode-b-export" value="b">
+              <label for="mode-b-export">&#8595; Marée basse</label>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">&#128197; Créer le calendrier</button>
+
+        <div id="status-export" class="status-msg" role="alert" aria-live="polite"></div>
+
+      </form>
+    </div>
+
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════
+       Écran 3 : Consulter (carte + formulaire sans date de fin)
+  ════════════════════════════════════════════════════════════════ -->
+  <div id="screen-consulter" class="screen">
+
+    <div style="max-width:440px;margin:0 auto;">
+      <button class="btn-retour" id="btn-retour-consult">&#8592; Retour</button>
+    </div>
+
+    <div id="map-ports-consult" class="map-ports"></div>
+
+    <div class="card">
+      <form id="form-consult" novalidate>
+
+        <div class="field">
+          <label class="lbl" for="port-select-consult">Port</label>
+          <select id="port-select-consult" required>
+            <option value="">Chargement…</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="lbl" for="date-debut-consult">Date de début</label>
+          <input type="date" id="date-debut-consult" required>
+        </div>
+
+        <div class="field">
+          <label class="lbl" for="seuil-consult">Seuil (m CM)</label>
+          <input type="text" id="seuil-consult" inputmode="decimal"
+                 placeholder="ex. 4,5" autocomplete="off" required>
+        </div>
+
+        <div class="field">
+          <label class="lbl">Mode</label>
+          <div class="modes">
+            <div class="mode-btn">
+              <input type="radio" name="mode-consult" id="mode-h-consult" value="h" checked>
+              <label for="mode-h-consult">&#8593; Marée haute</label>
+            </div>
+            <div class="mode-btn">
+              <input type="radio" name="mode-consult" id="mode-b-consult" value="b">
+              <label for="mode-b-consult">&#8595; Marée basse</label>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">&#128065; Afficher</button>
+
+        <div id="status-consult" class="status-msg" role="alert" aria-live="polite"></div>
+
+      </form>
+    </div>
+
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════
+       Écran 4 : Frise de consultation (plein écran)
+  ════════════════════════════════════════════════════════════════ -->
+  <div id="screen-frise" class="screen">
+
+    <!-- Barre supérieure : retour + informations -->
+    <div id="frise-top">
+      <button id="btn-retour-frise" aria-label="Retour">&#8592;</button>
+      <span id="frise-info"></span>
+    </div>
+
+    <!-- Flèches gauche/droite + grille scrollable -->
+    <div id="frise-outer">
+      <button id="btn-frise-prev" class="frise-nav-btn" aria-label="Semaine précédente">&#8249;</button>
+
+      <div id="frise-scroll">
+        <div id="frise-grille">
+          <!-- Contenu généré par JS -->
+        </div>
+      </div>
+
+      <button id="btn-frise-next" class="frise-nav-btn" aria-label="Semaine suivante">&#8250;</button>
+    </div>
+
+  </div>
+
+  <!-- ── Pied de page ──────────────────────────────────────────────── -->
+  <footer id="main-footer">Fonctionne hors-ligne · Données harmoniques SHOM</footer>
+
+  <!-- Leaflet + moteur de marée + export ICS + application -->
   <script src="js/lib/leaflet.js"></script>
-  <!-- Moteur de marée + export ICS + application -->
   <script src="js/maree.js"></script>
   <script src="js/ics.js"></script>
   <script src="js/app.js"></script>
