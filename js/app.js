@@ -6,7 +6,7 @@
      JOURS_FRISE  : nombre de jours visibles (changer aussi px dans le CSS)
      PX_PAR_HEURE : hauteur d'une heure en pixels (doit correspondre au CSS : 56px)
   ════════════════════════════════════════════════════════════════════ */
-  const JOURS_FRISE  = 7;
+  const JOURS_FRISE  = 5;
   const PX_PAR_HEURE = 56;
   const TOTAL_PX     = 24 * PX_PAR_HEURE; // 1344 px
   const MS_JOUR      = 86400000;

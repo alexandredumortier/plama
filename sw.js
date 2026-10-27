@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME = 'plama-v5';
+const CACHE_NAME = 'plama-v6';
 
 // Tous les fichiers à mettre en cache pour le mode hors-ligne
 const ASSETS = [
