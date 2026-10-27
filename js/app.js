@@ -21,7 +21,11 @@
       const afficherBandeau = (sw) => {
         const b = document.getElementById('bandeau-maj');
         b.hidden = false;
-        b.addEventListener('click', () => sw.postMessage({ type: 'SKIP_WAITING' }), { once: true });
+        b.addEventListener('click', () => {
+          b.hidden = true;
+          sw.postMessage({ type: 'SKIP_WAITING' });
+          setTimeout(() => location.reload(), 3000);
+        }, { once: true });
       };
 
       // Nouveau SW déjà en attente (ex. page rechargée après installation)

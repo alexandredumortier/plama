@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME = 'plama-v6';
+const CACHE_NAME = 'plama-v7';
 
 // Tous les fichiers à mettre en cache pour le mode hors-ligne
 const ASSETS = [
@@ -28,7 +28,7 @@ const ASSETS = [
 // Le client envoie { type: 'SKIP_WAITING' } quand l'utilisateur accepte la mise à jour.
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS.map((u) => new Request(u, { cache: 'reload' }))))
   );
 });
 
